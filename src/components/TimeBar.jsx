@@ -8,7 +8,7 @@ function TimeBar({ startHour, barLength }){
         let displayHour = hour >= 13 ? hour - 12 : hour;
         if(displayHour < 1)
             displayHour += 12;
-        rows.push(<th><h2>{Math.floor(displayHour) + (displayHour % 1 == 0 ? ":00" : ":30") + ampm}</h2></th>);
+        rows.push(<th key={i}><h2>{Math.floor(displayHour) + (displayHour % 1 == 0 ? ":00" : ":30") + ampm}</h2></th>);
         hour += 0.5;
         if(hour >= 24)
             hour = 0;
