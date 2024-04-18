@@ -6,12 +6,13 @@
   "scripts": {
     "dev-front": "vite",
     "dev-node": "tsx watch src/server",
-    "dev": "concurrently \"npm run dev-node\" \"npm run dev-front\"" ,
+    "dev": "concurrently \"npm run dev-node\" \"npm run dev-front\"",
     "build": "vite build",
     "lint": "eslint . --ext js,jsx --report-unused-disable-directives --max-warnings 0",
     "preview": "vite preview"
   },
   "dependencies": {
+    "axios": "^1.6.8",
     "bootstrap": "^5.3.3",
     "concurrently": "^8.2.2",
     "express": "^4.19.2",

@@ -1,5 +1,6 @@
 import { React, useState, useRef, useEffect, useCallback } from 'react'
 import './App.css'
+import axios from 'axios';
 import screenfull from 'screenfull';
 import VideoEmbed from "./components/VideoEmbed.jsx";
 import TimeBar from "./components/TimeBar.jsx";
@@ -52,24 +53,25 @@ function App() {
   };
 
   useEffect(() => {
-    fetch("http://localhost:5173/api/data")
-    .then((res) => res.json())
-    .then((data) => {
-      setDataCall(data);
-      setepTitle(data.channels[currentChannel].playlist[0].title);
-      setepTime(data.channels[currentChannel].playlist[0].timespace);
-      setepepDesc(data.channels[currentChannel].playlist[0].description);
-      setvidLocation(data.channels[currentChannel].eplocation);
-      setCurrentPlayTime(data.playtimeSecs);
-      playerRef.current.seekTo(data.playtimeSecs, "seconds");
-    });
+    const loadDataCall = async () =>{
+      const response = await axios.get(`/api/data`);
+      const newData = response.data;
+      setDataCall(newData);
+      setepTitle(newData.channels[currentChannel].playlist[0].title);
+      setepTime(newData.channels[currentChannel].playlist[0].timespace);
+      setepepDesc(newData.channels[currentChannel].playlist[0].description);
+      setvidLocation(newData.channels[currentChannel].eplocation);
+      setCurrentPlayTime(newData.playtimeSecs);
+      playerRef.current.seekTo(newData.playtimeSecs, "seconds");
+    };
+    loadDataCall();
   }, []);
 
   return (
     <>
       <div className='apparea'>
         <div>
-          <table className='topbar'>
+          <table className='topbar'><tbody>
             <tr>
               <td width={"50%"}>
                 <h1>{epTitle}</h1>
@@ -80,16 +82,16 @@ function App() {
                 <VideoEmbed embedId={vidLocation} playerRef={playerRef} onReady={onReady} />
               </td>
             </tr>
-          </table>
+            </tbody></table>
         </div>
         <div>
-          <table className='schedule'>
+          <table className='schedule'><tbody>
             <tr className='timebar'>
               <th><h2>Today</h2></th>
               <TimeBar startHour={dataCall.currentHour} barLength={getMaxEps()} />
             </tr>
             <ChannelBars channels={dataCall.channels} changeChannel={changeChannel} updatePreview={updatePreview} />
-          </table>
+            </tbody></table>
         </div>
       </div>
     </>
