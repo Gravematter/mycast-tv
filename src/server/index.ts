@@ -1,5 +1,4 @@
 import express, { json } from "express";
-import { useEffect } from 'react';
 import { api } from "./api";
 
 const app = express();
