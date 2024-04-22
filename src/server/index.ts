@@ -36,7 +36,6 @@ function getPlayTime(date){
 };
 
 //this is where you can start building the actual data that will be returned when the API is called.
-const returnCall = {};
 app.get('/api/data', (req, res) => {
     res.send({
         "currentHour" : getCurrentHour(new Date()),
