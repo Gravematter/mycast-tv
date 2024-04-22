@@ -54,7 +54,7 @@ function App() {
 
   useEffect(() => {
     const loadDataCall = async () =>{
-      const response = await axios.get(`/api/data`);
+      const response = await axios.get(`/api/testing`);
       const newData = response.data;
       setDataCall(newData);
       setepTitle(newData.channels[currentChannel].playlist[0].title);
