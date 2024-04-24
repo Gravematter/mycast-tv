@@ -67,6 +67,16 @@ function App() {
     loadDataCall();
   }, []);
 
+  const focusPoint = useRef(null);
+  const resetFocus = (e) => {
+    if (focusPoint.current && document.activeElement.tagName === "BODY") {
+      focusPoint.current.focus();
+    }
+  };
+  useEffect(() => {
+    document.addEventListener('keydown', resetFocus, true)
+  }, []);
+
   return (
     <>
       <div className='apparea'>
@@ -90,7 +100,7 @@ function App() {
               <th><h2>Today</h2></th>
               <TimeBar startHour={dataCall.currentHour} barLength={getMaxEps()} />
             </tr>
-            <ChannelBars channels={dataCall.channels} changeChannel={changeChannel} updatePreview={updatePreview} />
+            <ChannelBars channels={dataCall.channels} changeChannel={changeChannel} updatePreview={updatePreview} focusPoint={focusPoint} />
             </tbody></table>
         </div>
       </div>

@@ -1,10 +1,10 @@
-import { React, useState, useRef, useEffect } from 'react'
+import { React, useState } from 'react'
 
-function ChannelBars({ channels, changeChannel, updatePreview }){
+function ChannelBars({ channels, changeChannel, updatePreview, focusPoint }){
     
     const [activeChannel, setActiveChannel] = useState(0);
     const [newEpisode, setNewEpisode] = useState("");
-    const focusPoint = useRef(null);
+    
     const handleKeyDown = (e) => {
         if(e.key === 'ArrowRight') {
             moveFocusRight();
@@ -76,12 +76,6 @@ function ChannelBars({ channels, changeChannel, updatePreview }){
             </tr>
         )}
     );
-
-    useEffect(() => {
-        if (focusPoint.current) {
-            focusPoint.current.focus();
-        }
-    }, []);
 
     return channelData;
 }
