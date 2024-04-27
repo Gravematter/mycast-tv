@@ -50,26 +50,32 @@ app.get('/api/testing', (req, res) => res.send({
         "name" : "channel-1",
         "id" : 0,
         "eplocation": "channel-1/Video1.mp4",
-        "playlist" : buildPlaylist("dramaticshow", "A super tense drama like wow man")
+        "playlist" : buildPlaylist("dramaticshow", "A super tense drama like wow man", 8)
     },
     {
         "name" : "channel-2",
         "id" : 1,
         "eplocation": "channel-2/Video2.mp4",
-        "playlist" : buildPlaylist("coolshow", "A cool show for cool people")
+        "playlist" : buildPlaylist("coolshow", "A cool show for cool people", 8)
     },
     {
         "name" : "channel-3",
         "id" : 2,
         "eplocation": "channel-3/Video3.mp4",
-        "playlist" : buildPlaylist("funnyshow", "hahahaha so funny lol XD")
+        "playlist" : buildPlaylist("funnyshow", "hahahaha so funny lol XD", 10)
+    },
+    {
+        "name" : "channel-4",
+        "id" : 3,
+        "eplocation": "channel-4/Video4.mp4",
+        "playlist" : buildPlaylist("chillshow", "Just a chill relaxing time bro", 8)
     }]
 }));
 
-function buildPlaylist(title, desc){
+function buildPlaylist(title, desc, numEps){
     const pList : any[] = [];
     let hour = 13;
-    for(let i = 0; i < 6; i++){
+    for(let i = 0; i < numEps; i++){
         const entry = {
             'title' : title + i,
             "description": desc,

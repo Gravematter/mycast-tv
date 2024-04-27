@@ -1,9 +1,15 @@
 import { React } from 'react'
 
-function TimeBar({ startHour, barLength }){
+function TimeBar({ startHour, startPoint }){
     let rows = [];
+    rows.push(<th><h2>Today</h2></th>);
     let hour = startHour;
-    for(let i = 0; i < barLength; i++){
+    for(let i = 0; i < startPoint; i++){
+        hour += 0.5;
+        if(hour >= 24)
+            hour = 0;
+    }
+    for(let i = 0; i < 6; i++){
         let ampm = hour >= 12 ? " pm" : " am";
         let displayHour = hour >= 13 ? hour - 12 : hour;
         if(displayHour < 1)

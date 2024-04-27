@@ -52,6 +52,19 @@ function App() {
     }
   };
 
+  //channel bar components
+  const focusPoint = useRef(null);
+  const resetFocus = (e) => {
+    if (focusPoint.current && document.activeElement.tagName === "BODY") {
+      focusPoint.current.focus();
+    }
+  };
+  useEffect(() => {
+    document.addEventListener('keydown', resetFocus, true)
+  }, []);
+  const [startPoint, setStartPoint] = useState(0);
+
+  //render components
   useEffect(() => {
     const loadDataCall = async () =>{
       const response = await axios.get(`/api/testing`);
@@ -65,16 +78,6 @@ function App() {
       playerRef.current.seekTo(newData.playtimeSecs, "seconds");
     };
     loadDataCall();
-  }, []);
-
-  const focusPoint = useRef(null);
-  const resetFocus = (e) => {
-    if (focusPoint.current && document.activeElement.tagName === "BODY") {
-      focusPoint.current.focus();
-    }
-  };
-  useEffect(() => {
-    document.addEventListener('keydown', resetFocus, true)
   }, []);
 
   return (
@@ -97,10 +100,9 @@ function App() {
         <div>
           <table className='schedule'><tbody>
             <tr className='timebar'>
-              <th><h2>Today</h2></th>
-              <TimeBar startHour={dataCall.currentHour} barLength={getMaxEps()} />
+              <TimeBar startHour={dataCall.currentHour} startPoint={startPoint} />
             </tr>
-            <ChannelBars channels={dataCall.channels} changeChannel={changeChannel} updatePreview={updatePreview} focusPoint={focusPoint} />
+            <ChannelBars channels={dataCall.channels} changeChannel={changeChannel} updatePreview={updatePreview} focusPoint={focusPoint} startPoint={startPoint} setStartPoint={setStartPoint} />
             </tbody></table>
         </div>
       </div>
