@@ -7,6 +7,7 @@ function ChannelBars({ channels, changeChannel, updatePreview, focusPoint, start
     const [startChannel, setStartChannel] = useState(0);
     const [newEpisode, setNewEpisode] = useState("");
     let lastRow = true;
+    
     const endChannel = Math.min(startChannel + rowsToDisplay, channels.length);
     const currenChannels = channels.slice(startChannel, endChannel);
     
@@ -32,12 +33,13 @@ function ChannelBars({ channels, changeChannel, updatePreview, focusPoint, start
         const activeItem = document.activeElement;
         for(let i = 0; i < listItems.length; i++) {
             const listLength = listItems.length
-            if(activeItem === listItems[i] && activeItem !== listItems[listLength - 1]) {
-                listItems[i + 1].focus();
-            }
-            else if(activeItem === listItems[i] && activeItem === listItems[listLength - 1] && !lastRow) {
-                setStartPoint(startPoint + colsToDisplay);
-                document.activeElement.blur();
+            if(activeItem === listItems[i]){
+                if(activeItem !== listItems[listLength - 1]) {
+                    listItems[i + 1].focus();
+                }
+                else if(!lastRow) {
+                    setStartPoint(startPoint + 1);
+                }
             }
         };
     };
@@ -45,12 +47,13 @@ function ChannelBars({ channels, changeChannel, updatePreview, focusPoint, start
         const listItems = document.querySelector(("#channel" + activeChannel)).childNodes;
         const activeItem = document.activeElement;
         for(let i = 0; i < listItems.length; i++) {
-            if(activeItem === listItems[i] && activeItem !== listItems[1]) {
-                listItems[i - 1].focus();
-            }
-            else if(activeItem === listItems[i] && activeItem === listItems[1] && startPoint !== 0) {
-                setStartPoint(startPoint - colsToDisplay);
-                document.activeElement.blur();
+            if(activeItem === listItems[i]){
+                if(activeItem !== listItems[1]) {
+                    listItems[i - 1].focus();
+                }
+                else if(startPoint !== 0) {
+                    setStartPoint(startPoint - 1);
+                }
             }
         };
     };
@@ -58,13 +61,14 @@ function ChannelBars({ channels, changeChannel, updatePreview, focusPoint, start
         const listItems = document.querySelector(("#channel" + activeChannel)).childNodes;
         const activeItem = document.activeElement;
         for(let i = 0; i < listItems.length; i++) {
-            if(activeItem === listItems[i]  && activeChannel !== 0) {
-                const nextChanItems = document.querySelector(("#channel" + (activeChannel - 1))).childNodes;
-                nextChanItems[i].focus();
-            }
-            else if(activeItem === listItems[i] && activeChannel === 0 && startChannel !== 0) {
-                setStartChannel(startChannel - rowsToDisplay);
-                document.activeElement.blur();
+            if(activeItem === listItems[i]){
+                if(activeChannel !== 0) {
+                    const nextChanItems = document.querySelector(("#channel" + (activeChannel - 1))).childNodes;
+                    nextChanItems[i].focus();
+                }
+                else if(startChannel !== 0) {
+                    setStartChannel(startChannel - 1);
+                }
             }
         };
     };
@@ -72,23 +76,43 @@ function ChannelBars({ channels, changeChannel, updatePreview, focusPoint, start
         const listItems = document.querySelector(("#channel" + activeChannel)).childNodes;
         const activeItem = document.activeElement;
         for(let i = 0; i < listItems.length; i++) {
-            if(activeItem === listItems[i] && activeChannel !== 2) {
-                const nextChanItems = document.querySelector(("#channel" + (activeChannel + 1))).childNodes;
-                nextChanItems[i].focus();
-            }
-            else if(activeItem === listItems[i] && activeChannel === 2 && !(endChannel === channels.length)) {
-                setStartChannel(startChannel + rowsToDisplay);
-                document.activeElement.blur();
+            if(activeItem === listItems[i]){
+                if(activeChannel !== 2) {
+                    const nextChanItems = document.querySelector(("#channel" + (activeChannel + 1))).childNodes;
+                    nextChanItems[i].focus();
+                }
+                else if(endChannel !== channels.length) {
+                    setStartChannel(startChannel + 1);
+                }
             }
         };
     };
 
     const channelData = currenChannels.map(
         (row, i) => {
-            const endpoint = Math.min(startPoint + colsToDisplay, row.playlist.length);
+            let colsLeft = colsToDisplay;
+            let colsUsed = startPoint;
+            const episodes = [];
+            
+            row.playlist.forEach(
+                episode => {
+                    const tSlots = Math.min(colsLeft, episode.timeslots - colsUsed);
+                    const showCol = tSlots <= 0 ? false : true;
+                    colsLeft -= Math.max(0, tSlots);
+                    colsUsed = Math.max(0, colsUsed - episode.timeslots);
+                    if(showCol){
+                        episodes.push({
+                            "columns" : tSlots,
+                            "title" : episode.title,
+                            "timespace" : episode.timespace,
+                            "description" : episode.description
+                        });
+                    }
+            })
+
             if(lastRow)
-                lastRow = endpoint === row.playlist.length ? true : false;
-            const episodes = row.playlist.slice(startPoint, endpoint);
+                lastRow = row.playlist.at(-1) === episodes.at(-1) ? true : false;
+
             return(
             <tr key={i} tabIndex={i} className='channel' id={"channel" + i} onKeyDown={handleKeyDown} onFocus={() => {setActiveChannel(i); setNewEpisode(row.eplocation)}} onDoubleClick={() => changeChannel(row.eplocation)}>
                 <td className='channelbar'><h2>{row.name}</h2></td>
@@ -96,7 +120,7 @@ function ChannelBars({ channels, changeChannel, updatePreview, focusPoint, start
                     (episode, j) => {
                         const focusRef = i + j === 0 ? focusPoint : null;
                         return(
-                        <td key={j} tabIndex={j} ref={focusRef} colSpan={episode.timeslots} className='episode' onFocus={() => updatePreview(episode.title, episode.timespace, episode.description)}><h2>{episode.title}</h2></td>
+                        <td key={j} tabIndex={j} ref={focusRef} colSpan={episode.columns} className='episode' onFocus={() => updatePreview(episode.title, episode.timespace, episode.description)}><h2>{episode.title}</h2></td>
                     )}
                 )}
             </tr>

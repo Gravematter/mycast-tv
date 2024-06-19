@@ -77,10 +77,10 @@ function buildPlaylist(title, desc, numEps){
     let hour = 13;
     for(let i = 0; i < numEps; i++){
         const entry = {
-            'title' : title + i,
+            "title" : title + i,
             "description": desc,
             "timespace" : getTimeSpace(hour),
-            "timeslots" : 1
+            "timeslots" : 2
         };
         pList.push(entry);
         hour += 0.5;
