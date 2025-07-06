@@ -24,7 +24,7 @@ function getCurrentHour(date){
     return currentHour;
 };
 
-//get the amount of seconds between the current hour block and the current time
+//get the amount of seconds between the current block start time and the current time
 function getPlayTime(date){
     let secs = date.getSeconds();
     if(date.getMinutes() < 30)
@@ -44,8 +44,8 @@ app.get('/api/data', (req, res) => {
 
 //this is the path for the dummy data I'm using for testing
 app.get('/api/testing', (req, res) => res.send({
-    "currentHour" : 13,
-    "playtimeSecs": 120,
+    "currentHour" : getCurrentHour(new Date()),
+    "playtimeSecs": getPlayTime(new Date()),
     "channels" : [{
         "name" : "channel-1",
         "id" : 0,
@@ -62,7 +62,7 @@ app.get('/api/testing', (req, res) => res.send({
         "name" : "channel-3",
         "id" : 2,
         "eplocation": "channel-3/Video3.mp4",
-        "playlist" : buildPlaylist("funnyshow", "hahahaha so funny lol XD", 10)
+        "playlist" : buildPlaylist("funnyshow", "hahahaha so funny lol XD", 8)
     },
     {
         "name" : "channel-4",
@@ -80,7 +80,7 @@ function buildPlaylist(title, desc, numEps){
             "title" : title + i,
             "description": desc,
             "timespace" : getTimeSpace(hour),
-            "timeslots" : 2
+            "timeslots" : 1
         };
         pList.push(entry);
         hour += 0.5;

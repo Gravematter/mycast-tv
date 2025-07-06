@@ -3,13 +3,13 @@ import { React, useState } from 'react'
 function ChannelBars({ channels, changeChannel, updatePreview, focusPoint, startPoint, setStartPoint }){
     const colsToDisplay = 6;
     const rowsToDisplay = 3;
+    let lastRow = false;
     const [activeChannel, setActiveChannel] = useState(0);
     const [startChannel, setStartChannel] = useState(0);
     const [newEpisode, setNewEpisode] = useState("");
-    let lastRow = true;
     
     const endChannel = Math.min(startChannel + rowsToDisplay, channels.length);
-    const currenChannels = channels.slice(startChannel, endChannel);
+    const currentChannels = channels.slice(startChannel, endChannel);
     
     const handleKeyDown = (e) => {
         if(e.key === 'ArrowRight') {
@@ -68,6 +68,8 @@ function ChannelBars({ channels, changeChannel, updatePreview, focusPoint, start
                 }
                 else if(startChannel !== 0) {
                     setStartChannel(startChannel - 1);
+                    //problem is here, blur for now as temporary solution
+                    document.activeElement.blur();
                 }
             }
         };
@@ -83,12 +85,14 @@ function ChannelBars({ channels, changeChannel, updatePreview, focusPoint, start
                 }
                 else if(endChannel !== channels.length) {
                     setStartChannel(startChannel + 1);
+                    //problem is here, blur for now as temporary solution
+                    document.activeElement.blur();
                 }
             }
         };
     };
 
-    const channelData = currenChannels.map(
+    const channelData = currentChannels.map(
         (row, i) => {
             let colsLeft = colsToDisplay;
             let colsUsed = startPoint;
@@ -107,14 +111,13 @@ function ChannelBars({ channels, changeChannel, updatePreview, focusPoint, start
                             "timespace" : episode.timespace,
                             "description" : episode.description
                         });
+                        if(!lastRow)
+                            lastRow = row.playlist.at(-1) === episode ? true : false;
                     }
             })
 
-            if(lastRow)
-                lastRow = row.playlist.at(-1) === episodes.at(-1) ? true : false;
-
             return(
-            <tr key={i} tabIndex={i} className='channel' id={"channel" + i} onKeyDown={handleKeyDown} onFocus={() => {setActiveChannel(i); setNewEpisode(row.eplocation)}} onDoubleClick={() => changeChannel(row.eplocation)}>
+            <tr key={i} tabIndex={i} className='channel' id={"channel" + i} onKeyDown={handleKeyDown} onFocus={() =>  {setActiveChannel(i); setNewEpisode(row.eplocation)}} onDoubleClick={() => changeChannel(row.eplocation)}>
                 <td className='channelbar'><h2>{row.name}</h2></td>
                 {episodes.map(
                     (episode, j) => {
