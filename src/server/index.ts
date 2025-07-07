@@ -1,9 +1,15 @@
 import express, { json } from "express";
 import { api } from "./api";
+import path from "path";
+import { fileURLToPath } from "url";
+
+const _filename = fileURLToPath(import.meta.url);
+const _dirname = path.dirname(_filename);
 
 const app = express();
 app.use(api);
-app.listen(3002, () => console.log("Started"));
+const PORT = process.env.PORT || 3002;
+app.listen(PORT, () => console.log("Started"));
 
 //Takes the hour (in 24 hour format) and returns the timeslot string to be displayed for it.
 function getTimeSpace(hour){
@@ -87,3 +93,9 @@ function buildPlaylist(title, desc, numEps){
     };
     return pList;
 };
+
+app.use(express.static(path.join(_dirname, '../../dist')));
+
+app.get(/^(?!\/api).+/, (req, res) => {
+    res.sendFile(path.join(_dirname, '../../dist/index.html'))
+});
