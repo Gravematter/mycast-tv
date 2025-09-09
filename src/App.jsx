@@ -10,7 +10,6 @@ function App() {
 
   //app components
   const [dataCall, setDataCall] = useState({"channels": [{"playlist": [{}]}]});
-  const [currentChannel, setCurrentChannel] = useState(0);
   const [epTitle, setepTitle] = useState("");
   const [epTime, setepTime] = useState("");
   const [epDesc, setepepDesc] = useState("");
@@ -36,12 +35,12 @@ function App() {
   //vidplayers components
   const [vidLocation, setvidLocation] = useState("");
   const [isReady, setIsReady] = useState(false);
-  const [currentPlayTime, setCurrentPlayTime] = useState(0);
   const playerRef = useRef(null);
 
-  const onReady = useCallback(() => {
+  const onReady = useCallback(async () => {
     if (!isReady) {
-      playerRef.current.seekTo(currentPlayTime, "seconds");
+      const response = await axios.get(`/api/testing`);
+      playerRef.current.seekTo(response.data.playtimeSecs, "seconds");
       setIsReady(true);
     }
   }, [isReady]);
@@ -68,14 +67,12 @@ function App() {
   useEffect(() => {
     const loadDataCall = async () =>{
       const response = await axios.get(`/api/testing`);
-      const newData = response.data;
-      setDataCall(newData);
-      setepTitle(newData.channels[currentChannel].playlist[0].title);
-      setepTime(newData.channels[currentChannel].playlist[0].timespace);
-      setepepDesc(newData.channels[currentChannel].playlist[0].description);
-      setvidLocation(newData.channels[currentChannel].eplocation);
-      setCurrentPlayTime(newData.playtimeSecs);
-      playerRef.current.seekTo(newData.playtimeSecs, "seconds");
+      setDataCall(response.data);
+      setepTitle(response.data.channels[0].playlist[0].title);
+      setepTime(response.data.channels[0].playlist[0].timespace);
+      setepepDesc(response.data.channels[0].playlist[0].description);
+      setvidLocation(response.data.channels[0].eplocation);
+      playerRef.current.seekTo(response.data.playtimeSecs, "seconds");
     };
     loadDataCall();
   }, []);
